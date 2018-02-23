@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/GeoNav.iml" filepath="$PROJECT_DIR$/.idea/GeoNav.iml" />
       <module fileurl="file://$PROJECT_DIR$/GeoNav.iml" filepath="$PROJECT_DIR$/GeoNav.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

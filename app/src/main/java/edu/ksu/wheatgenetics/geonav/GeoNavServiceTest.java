@@ -5,19 +5,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 
-import edu.ksu.wheatgenetics.fieldmapping.R;
+import edu.ksu.wheatgenetics.geonav.R;
 
 public class GeoNavServiceTest extends AppCompatActivity {
 
@@ -29,9 +33,6 @@ public class GeoNavServiceTest extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 100);
 
-        final Intent sharedFilePicker = new Intent(Intent.ACTION_PICK);
-        sharedFilePicker.setType("text/*");
-        startActivityForResult(sharedFilePicker, 0);
 
         /*
         //first method
@@ -72,14 +73,36 @@ public class GeoNavServiceTest extends AppCompatActivity {
         fieldMappingIntent.putExtra("map", idMap);
 
         startService(fieldMappingIntent); */
-        final IntentFilter filter = new IntentFilter();
-        filter.addAction(GeoNavConstants.BROADCAST_LOCATION);
-        filter.addAction(GeoNavConstants.BROADCAST_ACCURACY);
-        filter.addAction(GeoNavConstants.BROADCAST_PLOT_ID);
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-                new ResponseReceiver(),
-                filter
-        );
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int resultCode, String[] permissions, int[] granted) {
+
+        boolean permissionGranted = true;
+        if (resultCode == 100) {
+            for (int i = 0; i < granted.length; i++) {
+                if (granted[i] != PackageManager.PERMISSION_GRANTED) {
+                    permissionGranted = false;
+                }
+            }
+        }
+        if(permissionGranted) {
+
+            final Intent sharedFilePicker = new Intent();
+            sharedFilePicker.setType("text/*");
+            sharedFilePicker.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(sharedFilePicker, "Select file."), 0);
+
+            final IntentFilter filter = new IntentFilter();
+            filter.addAction(GeoNavConstants.BROADCAST_LOCATION);
+            filter.addAction(GeoNavConstants.BROADCAST_ACCURACY);
+            filter.addAction(GeoNavConstants.BROADCAST_PLOT_ID);
+            LocalBroadcastManager.getInstance(this).registerReceiver(
+                    new ResponseReceiver(),
+                    filter
+            );
+        }
     }
 
     @Override
